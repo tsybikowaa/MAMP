@@ -1,0 +1,11 @@
+Код сотрудника	fk_Должность	ФИО 	Логин 	Пароль	Последний вход
+101	1	Иванов Иван Иванович	Ivanov@namecomp.ru	2L6KZG	15.05.2022 13:13
+102	1	Петров Петр Петрович	petrov@namecomp.ru	uzWC67	15.05.2022 13:13
+103	2	Федоров Федор Федорович	fedorov@namecomp.ru	8ntwUp	15.05.2022 13:13
+104	3	Миронов Вениамин Куприянович	mironov@namecomp.ru	YOyhfR	15.05.2022 13:13
+105	3	Ширяев Ермолай Вениаминович	shiryev@namecomp.ru	RSbvHv	15.05.2022 13:13
+106	3	Игнатов Кассиан Васильевич	ignatov@namecomp.ru	rwVDh9	15.05.2022 13:13
+107	4	Хохлов Владимир Мэлсович	hohlov@namecomp.ru	LdNyos	15.05.2022 13:13
+108	2	Стрелков Мстислав Георгьевич	strelkov@namecomp.ru	gynQMT	15.05.2022 13:13
+109	5	Беляева Лилия Наумовна	belyeva@@namecomp.ru	AtnDjr	15.05.2022 13:13
+110	5	Смирнова Ульяна Гордеевна	smirnova@@namecomp.ru	JlFRCZ	15.05.2022 13:13

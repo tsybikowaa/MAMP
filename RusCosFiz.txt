@@ -1,0 +1,104 @@
+ FizLizPage.xaml:
+
+ d:DesignHeight="450" d:DesignWidth="800"  MinHeight="450" MinWidth="600"
+  Title="Добавление клиента" Background="White" >
+
+<Grid>
+    <Grid.RowDefinitions>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="*"/>
+    </Grid.RowDefinitions>
+
+    <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="170"/>
+        <ColumnDefinition Width="*"/>
+    </Grid.ColumnDefinitions>
+
+    <Label Grid.Row="0" Grid.Column="0" Content="Код клиента:"/>
+    <TextBox Grid.Row="0" Grid.Column="1" x:Name="ClientCodeTextBox" />
+
+
+    <Label Grid.Row="1" Grid.Column="0" Content="ФИО клиента:"/>
+    <TextBox Grid.Row="1" Grid.Column="1" x:Name="clientNameTextBox"/>
+
+    <Label Grid.Row="2" Grid.Column="0" Content="Дата рождения:"/>
+    <DatePicker  Grid.Row="2" Grid.Column="1" Name="BirthTextBox"></DatePicker>
+
+    <Label Grid.Row="3" Grid.Column="0" Content="Адрес:"/>
+    <TextBox Grid.Row="3" Grid.Column="1" x:Name="AdrTextBox"/>
+    
+    <Label Grid.Row="4" Grid.Column="0" Content="Паспортные данные:"/>
+    <TextBox Grid.Row="4" Grid.Column="1" x:Name="PasrortTextBox"/>
+
+
+    <Button Margin="0,0,0,100" Grid.Row="5" Grid.Column="0" Height="30" Width="150" Content="Добавить" Click="addButton_Click" />
+</Grid>
+
+FizLizPage.cs:
+
+  public partial class FizLizPage : Page
+  {
+      public FizLizPage()
+      {
+          InitializeComponent();
+      }
+      string connectionString = @"Data Source = LAPTOP-9LSSTQJA;  Initial Catalog = Русская косметика; Integrated Security=True;";
+      private void addButton_Click(object sender, RoutedEventArgs e)
+      {
+          // Получаем данные из элементов управления
+          string client = ClientCodeTextBox.Text;
+          string name = clientNameTextBox.Text;
+          string birth = BirthTextBox.SelectedDate?.ToString("yyyy-MM-dd");
+          string adr = AdrTextBox.Text;
+          string pasp = PasrortTextBox.Text;
+ 
+
+
+          // Создаем подключение к базе данных
+          using (SqlConnection connection = new SqlConnection(connectionString))
+          {
+              try
+              {
+                  connection.Open();
+
+
+                  string insertQuery = "INSERT INTO Физическое_лицо (Код_клиента, Имя, Дата_рождения, Адрес, Паспорт_данные) " +
+                      "VALUES (@Kod, @Имя, @Дата, @Адрес, @Паспорт)";
+
+                  using (SqlCommand command = new SqlCommand(insertQuery, connection))
+                  {
+                      command.Parameters.AddWithValue("@Kod", client);
+                      command.Parameters.AddWithValue("@Имя", name);
+
+                      command.Parameters.AddWithValue("@Дата", birth);
+                      command.Parameters.AddWithValue("@Адрес", adr);
+                      command.Parameters.AddWithValue("@Паспорт", pasp);
+           
+
+
+
+                      int rowsAffected = command.ExecuteNonQuery();
+
+                      if (rowsAffected > 0)
+                      {
+                          MessageBox.Show("Клиент добавлен.");
+                      }
+                      else
+                      {
+                          MessageBox.Show("Не удалось добавить.");
+                      }
+                  }
+              }
+              catch (Exception ex)
+              {
+                  MessageBox.Show("Произошла ошибка: " + ex.Message);
+              }
+          }
+      }
+
+      
+  }

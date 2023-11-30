@@ -1,0 +1,90 @@
+create database [Русская косметика];
+go
+use [Русская косметика]
+
+CREATE TABLE Должности (
+  ID_должности INT PRIMARY KEY,
+  Наименование_должности VARCHAR(255)
+);
+
+CREATE TABLE Сотрудники (
+  ID_сотрудника INT PRIMARY KEY,
+  ID_должности INT,
+  Имя VARCHAR(255),
+  Логин VARCHAR(255),
+  Пароль VARCHAR(255),
+  Дата_время_последнего_входа DATETIME,
+  FOREIGN KEY (Id_должности) REFERENCES Должность (Id_должности)
+);
+
+
+CREATE TABLE Услуги (
+ ID_услуги INT PRIMARY KEY,
+  Название_услуги VARCHAR(255),
+  Код_услуги VARCHAR(255),
+  Срок_выполнение INT,
+  Среднее_отклонение float,
+  Стоимость_ЗАО_Русская_косметика DECIMAL(10, 2)
+); 
+
+CREATE TABLE Услуги_сотрудника (
+  ID_сотрудника INT,
+ ID_услуги INT,
+  PRIMARY KEY (Id_сотрудника, Id_услуги),
+  FOREIGN KEY (Id_сотрудника) REFERENCES Сотрудники (Id_сотрудника),
+  FOREIGN KEY (Id_услуги) REFERENCES Услуги (Id_услуги)
+);
+
+
+
+CREATE TABLE Клиент (
+  Код_клиента VARCHAR(255) PRIMARY KEY,
+  Почта VARCHAR(255),
+  Пароль VARCHAR(255),
+  Тип_клиента NVARCHAR(255)
+);
+
+
+CREATE TABLE Заказ (
+  ID_заказа VARCHAR(255) PRIMARY KEY,
+  Код_клиента VARCHAR(255),
+  Номер_заказа VARCHAR(255),
+  Дата_заказа DATE,
+  Статус VARCHAR(255),
+  Время_выполнения INT,
+  Дата_закрытия_услуги DATE,
+  FOREIGN KEY (Код_клиента) REFERENCES Клиент (Код_клиента)
+);
+
+CREATE TABLE Услуги_заказа (
+  ID_услуги INT,
+  ID_заказа VARCHAR(255),
+  PRIMARY KEY (Id_услуги, Id_заказа),
+  FOREIGN KEY (Id_услуги) REFERENCES Услуги (Id_услуги),
+  FOREIGN KEY (Id_заказа) REFERENCES Заказ (Id_заказа)
+);
+
+
+
+CREATE TABLE Юридическое_лицо (
+  Код_клиента VARCHAR(255) PRIMARY KEY,
+  Название_компании NVARCHAR(255),
+  ИНН VARCHAR(12),
+  БИК bigint,
+  РС VARCHAR(20),
+  ФИО_руководителя NVARCHAR(255),
+  ФИО_контактного_лица NVARCHAR(255),
+  Телефон VARCHAR(20),
+  Адрес NVARCHAR(255),
+  FOREIGN KEY (Код_клиента) REFERENCES Клиент (Код_клиента)
+);
+
+
+CREATE TABLE Физическое_лицо (
+  Код_клиента VARCHAR(255) PRIMARY KEY,
+  Имя VARCHAR(255),
+  Дата_рождения DATE,
+  Паспортн_данные varchar (100),
+  Адрес VARCHAR(255),
+  FOREIGN KEY (Код_клиента) REFERENCES Клиент (Код_клиента)
+);

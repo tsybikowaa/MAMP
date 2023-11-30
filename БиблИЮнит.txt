@@ -1,0 +1,66 @@
+Библиотека:
+   public class Calculations
+   {
+
+       public string[] AvailablePeriods(TimeSpan[] startTimes, int[] durations, TimeSpan beginWorkingTime, TimeSpan endWorkingTime, int consultationTime)
+       {
+           int sheduleIndex = 0;
+
+           string[] shedule = new string[sheduleIndex];
+
+           return shedule;
+       }
+   }
+
+
+Юнит тесты:
+using SF2022UserAltanaLib;
+
+using NUnit.Framework;
+using System;
+namespace TestDemo
+{
+    [TestFixture]
+    public class Tests
+    {
+
+        [Test]
+        public void AvailablePeriods_ReturnsCorrectAvailablePeriods_WhenConsultationTimeIsAtBeginningOrEndOfWorkingDay()
+        {
+            // Arrange
+            TimeSpan[] startTimes = { TimeSpan.Parse("10:00"), TimeSpan.Parse("11:00"), TimeSpan.Parse("12:00") };
+            int[] durations = { 30, 30, 30 };
+            TimeSpan beginWorkingTime = TimeSpan.Parse("08:00");
+            TimeSpan endWorkingTime = TimeSpan.Parse("18:00");
+            int consultationTime = 60;
+
+            Calculations calculations = new Calculations();
+
+            // Act
+            string[] result = calculations.AvailablePeriods(startTimes, durations, beginWorkingTime, endWorkingTime, consultationTime);
+
+            // Assert
+            string[] expected = { };
+            CollectionAssert.AreEqual(expected, result);
+        }
+        [Test]
+        public void AvailablePeriods_ReturnsEmptyArray_WhenNoAvailablePeriodsExist()
+        {
+            // Arrange
+            TimeSpan[] startTimes = { TimeSpan.Parse("10:00"), TimeSpan.Parse("11:00"), TimeSpan.Parse("12:00") };
+            int[] durations = { 30, 30, 30 };
+            TimeSpan beginWorkingTime = TimeSpan.Parse("08:00");
+            TimeSpan endWorkingTime = TimeSpan.Parse("18:00");
+            int consultationTime = 60;
+
+            Calculations calculations = new Calculations();
+
+            // Act
+            string[] result = calculations.AvailablePeriods(startTimes, durations, beginWorkingTime, endWorkingTime, consultationTime);
+
+            // Assert
+            Assert.IsEmpty(result);
+
+        }
+    }
+}

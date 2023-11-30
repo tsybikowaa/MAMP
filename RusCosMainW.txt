@@ -1,0 +1,226 @@
+MainWindow.xml:
+    Title="Формирование заказа" Height="450" Width="800"  MinHeight="450" MinWidth="600">
+<Grid>
+    <Grid.RowDefinitions>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="*"/>
+    </Grid.RowDefinitions>
+
+    <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="Auto"/>
+        <ColumnDefinition Width="*"/>
+    </Grid.ColumnDefinitions>
+
+    <Label Grid.Row="0" Grid.Column="0" Content="Код лабораторного сосуда:"/>
+    <TextBox Grid.Row="0" Grid.Column="1" x:Name="labVesselCodeTextBox"  TextChanged="labVesselCodeTextBox_TextChanged" />
+
+
+    <Label Grid.Row="1" Grid.Column="0" Content="Номер заказа:"/>
+    <TextBox Grid.Row="1" Grid.Column="1" x:Name="NumberOrderTextBox"/>
+    
+    <Label Grid.Row="2" Grid.Column="0" Content="Тип клиента:"/>
+    <ComboBox Grid.Row="2" Grid.Column="1" x:Name="clientTypeComboBox" SelectionChanged="clientTypeComboBox_SelectionChanged">
+        <ComboBoxItem Content="Юридическое лицо"/>
+        <ComboBoxItem Content="Физическое лицо"/>
+    </ComboBox>
+
+    <Label Grid.Row="3" Grid.Column="0" Content="ФИО клиента:"/>
+    <TextBox Grid.Row="3" Grid.Column="1" x:Name="clientNameTextBox"/>
+    
+    <Label Grid.Row="4" Grid.Column="0" Content="Название компании:"/>
+    <TextBox Grid.Row="4" Grid.Column="1" x:Name="companyNameTextBox"/>
+
+    <Label Grid.Row="5" Grid.Column="0" Content="Услуга:"/>
+    <TextBox Grid.Row="5" Grid.Column="1" x:Name="UslugaTextBox"/>
+
+
+    <Label Grid.Row="6" Grid.Column="0" Content="Дата создания заказа:"/>
+    <DatePicker  Grid.Row="6" Grid.Column="1" Name="DateOrderTextBox"></DatePicker>
+
+    <Label Grid.Row="7" Grid.Column="0" Content="Статус заказа:"/>
+    <TextBox Grid.Row="7" Grid.Column="1" x:Name="StatusOrderTextBox"/>
+
+    <Label Grid.Row="8" Grid.Column="0" Content="Дата закрытия заказа:"/>
+    <DatePicker  Grid.Row="8" Grid.Column="1" Name="CloseOrderTextBox"></DatePicker>
+   
+
+    <Label Grid.Row="9" Grid.Column="0" Content="Время выполнения заказа:"/>
+    <TextBox Grid.Row="9" Grid.Column="1" x:Name="TimeOrderTextBox"/>
+
+
+    <Button Margin="0,0,0,100" Grid.Row="10" Grid.Column="0" Height="30" Width="150" Content="Сформировать заказ" Click="saveOrderButton_Click" /> 
+    <Button Margin="0,0,0,0" Grid.Row="10" Grid.Column="0" Height="30" Width="150" Content="Добавить клиента" Click="addClientsButton_Click"/>
+    <Frame Name="FrameMain"/>
+</Grid>
+    
+MainWindow.cs:
+  public partial class MainWindow : Window
+  {
+      private List<Order> orders;
+      string connectionString = @"Data Source = LAPTOP-9LSSTQJA;  Initial Catalog = Русская косметика; Integrated Security=True;";
+
+      public MainWindow()
+      {
+          InitializeComponent();
+       
+      }
+      public void labVesselCodeTextBox_TextChanged(object sender, TextChangedEventArgs e)
+      {
+         
+          int lastOrderNumber = GetLastOrderNumberFromDatabase();
+          int newOrderNumber;
+          if (int.TryParse(labVesselCodeTextBox.Text, out newOrderNumber) && newOrderNumber > lastOrderNumber)
+          {
+              // Подстановка номера заказа в поле ввода
+              labVesselCodeTextBox.ToolTip = (newOrderNumber + 1).ToString();
+          }
+          else
+          {
+              // Очистка подсказки
+              labVesselCodeTextBox.ToolTip = null;
+          }
+
+      }
+   
+      private void saveOrderButton_Click(object sender, RoutedEventArgs e)
+      {
+          // Получаем данные из элементов управления
+          string labVesselCode = labVesselCodeTextBox.Text;
+          string numberOrder = NumberOrderTextBox.Text;
+          string dateOrder = DateOrderTextBox.Text;
+          string statusOrder = StatusOrderTextBox.Text;
+          string timeOrder = TimeOrderTextBox.Text;
+          string closeOrder = CloseOrderTextBox.SelectedDate?.ToString("yyyy-MM-dd");
+        
+
+          // Создаем подключение к базе данных
+          using (SqlConnection connection = new SqlConnection(connectionString))
+          {
+              try
+              {
+                  connection.Open();
+
+           
+                  string insertQuery = "INSERT INTO Заказ (Id_заказа, Номер_заказа, Дата_заказа, Статус, Время_выполнения, Дата_закрытия_услуги) " +
+                      "VALUES (@Id, @Номер, @Дата, @Статус, @Время, @ДатаЗакр)";
+
+                  using (SqlCommand command = new SqlCommand(insertQuery, connection))
+                  {
+                      command.Parameters.AddWithValue("@Id", labVesselCode);
+                      command.Parameters.AddWithValue("@Номер", numberOrder);
+
+                      command.Parameters.AddWithValue("@Дата", dateOrder);
+                      command.Parameters.AddWithValue("@Статус", statusOrder);
+                      command.Parameters.AddWithValue("@Время", timeOrder);
+                      command.Parameters.AddWithValue("@ДатаЗакр", closeOrder);
+
+
+                   
+                      int rowsAffected = command.ExecuteNonQuery();
+
+                      if (rowsAffected > 0)
+                      {
+                          MessageBox.Show("Заказ успешно сохранен.");
+                      }
+                      else
+                      {
+                          MessageBox.Show("Не удалось сохранить заказ.");
+                      }
+                  }
+              }
+              catch (Exception ex)
+              {
+                  MessageBox.Show("Произошла ошибка при сохранении: " + ex.Message);
+              }
+          }
+      }
+  
+
+      private void addClientsButton_Click(object sender, RoutedEventArgs e)
+      {
+          ComboBoxItem selectedItem = (ComboBoxItem)clientTypeComboBox.SelectedItem;
+          string selectedType = selectedItem.Content.ToString();
+
+          if (selectedType == "Физическое лицо")
+          {
+              FrameMain.Content = new FizLizPage();
+
+          }
+          else if (selectedType == "Юридическое лицо")
+          {
+              FrameMain.Content = new UridLizPage();
+          }
+         
+      }
+
+      private void clientTypeComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+      {
+          // Отображение или скрытие поля для ввода ФИО клиента в зависимости от выбранного заказчика
+          ComboBoxItem selectedItem = (ComboBoxItem)clientTypeComboBox.SelectedItem;
+          string customerType = selectedItem.Content.ToString();
+          if (customerType == "Физическое лицо")
+          {
+              clientNameTextBox.Visibility = Visibility.Visible;
+          }
+          else
+          {
+              clientNameTextBox.Visibility = Visibility.Collapsed;
+          }
+          if (customerType == "Юридическое лицо")
+          {
+              companyNameTextBox.Visibility = Visibility.Visible;
+          }
+          else
+          {
+              companyNameTextBox.Visibility = Visibility.Collapsed;
+          }
+
+         
+      }
+      private int GetLastOrderNumberFromDatabase()
+      {
+          int lastOrderNumber = 1;
+
+          using (SqlConnection connection = new SqlConnection(connectionString))
+          {
+              try
+              {
+                  connection.Open();
+
+                  string query = "SELECT MAX(Id_заказа) FROM Заказ";
+                  SqlCommand command = new SqlCommand(query, connection);
+                  object result = command.ExecuteScalar();
+
+                  if (result != null && result != DBNull.Value)
+                  {
+                      lastOrderNumber = Convert.ToInt32(result);
+                  }
+              }
+              catch (Exception ex)
+              {
+                  MessageBox.Show("Произошла ошибка при получении последнего номера заказа: " + ex.Message);
+              }
+          }
+
+          return lastOrderNumber;
+      }
+      public class Order {
+          public string Id_заказа { get; set; }
+          public string Код_клиента { get; set; }
+          public string Номер_заказа { get; set; }
+          public Nullable<System.DateTime> Дата_заказа { get; set; }
+          public string Статус { get; set; }
+          public Nullable<int> Время_выполнения { get; set; }
+          public Nullable<System.DateTime> Дата_закрытия_услуги { get; set; }
+
+      }
+  }

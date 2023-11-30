@@ -1,0 +1,125 @@
+UridLizPage.xaml:
+
+   d:DesignHeight="450" d:DesignWidth="800"  MinHeight="450" MinWidth="600"
+   Title="UridLizPage" Background="White">
+
+ <Grid>
+     <Grid.RowDefinitions>
+         <RowDefinition Height="Auto"/>
+         <RowDefinition Height="Auto"/>
+         <RowDefinition Height="Auto"/>
+         <RowDefinition Height="Auto"/>
+         <RowDefinition Height="Auto"/>
+         <RowDefinition Height="Auto"/>
+         <RowDefinition Height="Auto"/>
+         <RowDefinition Height="Auto"/>
+         <RowDefinition Height="Auto"/>
+         <RowDefinition Height="*"/>
+     </Grid.RowDefinitions>
+
+     <Grid.ColumnDefinitions>
+         <ColumnDefinition Width="170"/>
+         <ColumnDefinition Width="*"/>
+     </Grid.ColumnDefinitions>
+
+     <Label Grid.Row="0" Grid.Column="0" Content="Код клиента:"/>
+     <TextBox Grid.Row="0" Grid.Column="1" x:Name="ClientCodeTextBox" />
+
+
+     <Label Grid.Row="1" Grid.Column="0" Content="Название компании:"/>
+     <TextBox Grid.Row="1" Grid.Column="1" x:Name="NazvNameTextBox"/>
+
+     <Label Grid.Row="2" Grid.Column="0" Content="ИНН:"/>
+     <TextBox  Grid.Row="2" Grid.Column="1" Name="INNTextBox"></TextBox>
+
+     <Label Grid.Row="3" Grid.Column="0" Content="БИК:"/>
+     <TextBox Grid.Row="3" Grid.Column="1" x:Name="BIKTextBox"/>
+
+     <Label Grid.Row="4" Grid.Column="0" Content="p/c:"/>
+     <TextBox Grid.Row="4" Grid.Column="1" x:Name="PTextBox"/>
+     
+     <Label Grid.Row="5" Grid.Column="0" Content="ФИО руководителя:"/>
+     <TextBox Grid.Row="5" Grid.Column="1" x:Name="RukTextBox"/>
+     
+     <Label Grid.Row="6" Grid.Column="0" Content="ФИО контактного лица:"/>
+     <TextBox Grid.Row="6" Grid.Column="1" x:Name="KontLizTextBox"/>
+     
+     <Label Grid.Row="7" Grid.Column="0" Content="Телефон:"/>
+     <TextBox Grid.Row="7" Grid.Column="1" x:Name="TelTextBox"/>
+     
+     <Label Grid.Row="8" Grid.Column="0" Content="Адрес:"/>
+     <TextBox Grid.Row="8" Grid.Column="1" x:Name="AdrTextBox"/>
+
+
+     <Button Margin="0,0,0,100" Grid.Row="9" Grid.Column="0" Height="30" Width="150" Content="Добавить" Click="addButton_Click" />
+ </Grid>
+
+
+UridLizPage.cs:
+ public partial class UridLizPage : Page
+ {
+     public UridLizPage()
+     {
+         InitializeComponent();
+     }
+     string connectionString = @"Data Source = LAPTOP-9LSSTQJA;  Initial Catalog = Русская косметика; Integrated Security=True;";
+
+   
+     private void addButton_Click(object sender, RoutedEventArgs e)
+     {
+         // Получаем данные из элементов управления
+         string code = ClientCodeTextBox.Text;
+         string namenaz = NazvNameTextBox.Text;
+         string inn = INNTextBox.Text;
+         string bik = BIKTextBox.Text;
+         string passp = PTextBox.Text;
+         string ruk = RukTextBox.Text;
+         string kont = KontLizTextBox.Text;
+         string tel = TelTextBox.Text;
+         string adre = AdrTextBox.Text;
+
+
+         // Создаем подключение к базе данных
+         using (SqlConnection connection = new SqlConnection(connectionString))
+         {
+             try
+             {
+                 connection.Open();
+
+
+                 string insertQuery = "INSERT INTO Юридическое_лицо (Код_клиента, Название_компании, ИНН, БИК, РС, ФИО_руководителя, ФИО_контактного_лица, Телефон, Адрес) " +
+                     "VALUES (@Id, @Назв, @Инн, @Бик, @Рс, @ФИОоук,@ФИОконт,@Тел,@Адрес)";
+
+                 using (SqlCommand command = new SqlCommand(insertQuery, connection))
+                 {
+                     command.Parameters.AddWithValue("@Id", code);
+                     command.Parameters.AddWithValue("@Назв", namenaz);
+                     command.Parameters.AddWithValue("@Инн", inn);
+                     command.Parameters.AddWithValue("@Бик", bik);
+                     command.Parameters.AddWithValue("@Рс", passp);
+                     command.Parameters.AddWithValue("@ФИОоук", ruk);
+                     command.Parameters.AddWithValue("@ФИОконт", kont);
+                     command.Parameters.AddWithValue("@Тел", tel);
+                     command.Parameters.AddWithValue("@Адрес", adre);
+
+
+
+                     int rowsAffected = command.ExecuteNonQuery();
+
+                     if (rowsAffected > 0)
+                     {
+                         MessageBox.Show("Клиент добавлен.");
+                     }
+                     else
+                     {
+                         MessageBox.Show("Не удалось добавить.");
+                     }
+                 }
+             }
+             catch (Exception ex)
+             {
+                 MessageBox.Show("Произошла ошибка: " + ex.Message);
+             }
+         }
+     }
+ }
